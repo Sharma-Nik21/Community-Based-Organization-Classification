@@ -1,0 +1,79 @@
+---
+title: "CBO Random Forest"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+```{r}
+cbo <- read.csv("cbo5k.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+set.seed(123)
+cbo <- cbo[sample(1:nrow(cbo)), ]
+head(cbo)
+```
+
+```{r}
+cbo$Designation <- factor(cbo$Designation)
+```
+
+
+```{r}
+cbo$Tax_Exempt <- factor(cbo$Tax_Exempt)
+cbo$Registered <- factor(cbo$Registered)
+cbo$EIN <- factor(cbo$EIN)
+cbo$Public_Service <- factor(cbo$Public_Service)
+cbo$Location <- factor(cbo$Location)
+cbo$Financial <- factor(cbo$Financial)
+cbo$Waiver <- factor(cbo$Waiver)
+cbo$IRS990 <- factor(cbo$IRS990)
+```
+
+```{r}
+cbo_train <- cbo[1:3500, -9]
+cbo_test <- cbo[3501:5000, -9]
+```
+
+
+```{r}
+library(randomForest)
+library(tictoc)
+tic()
+set.seed(123)
+cbo_rf <- randomForest(Designation ~ ., data = cbo)
+toc()
+cbo_rf
+```
+
+```{r}
+plot(cbo_rf)
+```
+```{r}
+tic()
+set.seed(123)
+cbo_rf1 <- randomForest(Designation ~ ., data = cbo, importance =TRUE)
+toc()
+cbo_rf1
+```
+
+```{r}
+plot(cbo_rf1)
+```
+
+
+```{r}
+tic()
+set.seed(123)
+cbo_rf2 <- randomForest(Designation ~ ., data = cbo, mtry =4 ,
+                       importance = TRUE)
+toc()
+cbo_rf2
+```
+```{r}
+cbo_rf3 <- randomForest(Designation ~ ., data = cbo, mtry =6 ,
+                       importance = TRUE)
+cbo_rf3
+```
+

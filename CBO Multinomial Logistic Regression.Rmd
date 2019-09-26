@@ -1,0 +1,93 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+cbo <- read.csv("cbo5k.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+set.seed(123)
+cbo <- cbo[sample(1:nrow(cbo)), ]
+head(cbo)
+```
+
+```{r}
+cbo$Tax_Exempt <- factor(cbo$Tax_Exempt)
+cbo$Registered <- factor(cbo$Registered)
+cbo$EIN <- factor(cbo$EIN)
+cbo$Public_Service <- factor(cbo$Public_Service)
+cbo$Location <- factor(cbo$Location)
+cbo$Financial <- factor(cbo$Financial)
+cbo$Waiver <- factor(cbo$Waiver)
+cbo$IRS990 <- factor(cbo$IRS990)
+cbo$Designation <- factor(cbo$Designation)
+```
+
+```{r}
+cbo_train <- cbo[1:3500, ]
+cbo_test <- cbo[3501:5000, ]
+```
+
+```{r}
+library(nnet)
+model <- multinom(Designation ~ ., data = cbo_train, maxit = 1000)
+
+summary(model)
+```
+
+```{r}
+# Z - Scores
+zvalues <- summary(model)$coefficients / summary(model)$standard.errors
+
+#show z-values
+zvalues
+```
+
+```{r}
+# P-values
+pnorm(abs(zvalues), lower.tail=FALSE)*2
+```
+
+
+```{r}
+#Training Data
+cbo_training_prediction <- predict(model, cbo_train)
+```
+
+```{r}
+# Accuracy (Training)
+mean(cbo_training_prediction == cbo_train$Designation)
+```
+
+```{r}
+table(predicted = cbo_training_prediction, actual = cbo_train$Designation)
+```
+
+```{r}
+# Misclassification Rate (Training)
+
+1-mean(cbo_training_prediction == cbo_train$Designation)
+```
+
+```{r}
+# Testing dataset
+cbo_testing_prediction <- predict(model, cbo_test)
+```
+
+```{r}
+# Testing Accuracy
+mean(cbo_testing_prediction == cbo_test$Designation)
+```
+
+```{r}
+table(predicted = cbo_testing_prediction, actual = cbo_test$Designation)
+```
+
+```{r}
+# Testing Data Misclassification Rate
+1 - mean(cbo_testing_prediction == cbo_test$Designation)
+```
+

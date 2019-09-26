@@ -1,0 +1,183 @@
+---
+title: "CBO Support Vector Machine"
+output: html_notebook
+---
+ 
+
+```{r}
+cbo <- read.csv("cbo5k.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+set.seed(123)
+cbo <- cbo[sample(1:nrow(cbo)), ]
+head(cbo)
+```
+
+```{r}
+cbo$Designation <- factor(cbo$Designation)
+```
+
+```{r}
+cbo$Tax_Exempt <- factor(cbo$Tax_Exempt)
+cbo$Registered <- factor(cbo$Registered)
+cbo$EIN <- factor(cbo$EIN)
+cbo$Public_Service <- factor(cbo$Public_Service)
+cbo$Location <- factor(cbo$Location)
+cbo$Financial <- factor(cbo$Financial)
+cbo$Waiver <- factor(cbo$Waiver)
+cbo$IRS990 <- factor(cbo$IRS990)
+```
+
+```{r}
+cbo_train <- cbo[1:3500, ]
+cbo_test <- cbo[3501:5000, ]
+```
+
+```{r}
+library(kernlab)
+cbo_classifier_vdot <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "vanilladot")
+cbo_classifier_vdot
+```
+
+```{r}
+cbo_predictions_vdot <- predict(cbo_classifier_vdot, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_vdot)
+
+agreement <- cbo_predictions_vdot == cbo_test$Designation
+table(agreement)
+prop.table(table(agreement))
+```
+
+```{r}
+library(kernlab)
+cbo_classifier_rbf <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "rbfdot")
+cbo_classifier_rbf
+```
+
+```{r}
+set.seed(123)  #use
+cbo_classifier_rbf <- ksvm(Designation ~ ., data = cbo_train, kernel = "rbfdot")
+cbo_predictions_rbf <- predict(cbo_classifier_rbf, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_rbf)
+agreement_rbf <- cbo_predictions_rbf == cbo_test$Designation
+table(agreement_rbf)
+prop.table(table(agreement_rbf))
+```
+
+
+```{r}
+cbo_classifier_tanh <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "tanhdot")
+cbo_classifier_tanh
+```
+
+```{r}
+set.seed(123)
+cbo_classifier_tanh <- ksvm(Designation ~ ., data = cbo_train, kernel = "tanhdot")
+cbo_predictions_tanh <- predict(cbo_classifier_tanh, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_tanh)
+
+agreement_tanh <- cbo_predictions_tanh == cbo_test$Designation
+table(agreement_tanh)
+prop.table(table(agreement_tanh))
+```
+
+```{r}
+cbo_classifier_poly <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "polydot")
+cbo_classifier_poly
+```
+
+```{r}
+set.seed(123)
+cbo_classifier_poly <- ksvm(Designation ~ ., data = cbo_train, kernel = "polydot")
+cbo_predictions_poly <- predict(cbo_classifier_poly, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_poly)
+
+agreement_poly <- cbo_predictions_poly == cbo_test$Designation
+table(agreement_poly)
+prop.table(table(agreement_poly))
+```
+
+
+```{r}
+cbo_classifier_anova <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "anovadot")
+cbo_classifier_anova
+```
+
+```{r}
+set.seed(123)
+cbo_classifier_anova <- ksvm(Designation ~ ., data = cbo_train, kernel = "anovadot")
+cbo_predictions_anova <- predict(cbo_classifier_anova, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_anova)
+
+agreement_anova <- cbo_predictions_anova == cbo_test$Designation
+table(agreement_anova)
+prop.table(table(agreement_anova))
+```
+
+
+```{r}
+cbo_classifier_bess <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "besseldot")
+cbo_classifier_bess
+```
+
+```{r}
+set.seed(123)
+cbo_classifier_bess <- ksvm(Designation ~ ., data = cbo_train, kernel = "besseldot")
+cbo_predictions_bess <- predict(cbo_classifier_bess, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_bess)
+
+agreement_bess <- cbo_predictions_bess == cbo_test$Designation
+table(agreement_bess)
+prop.table(table(agreement_bess))
+```
+
+```{r}
+cbo_classifier_spl <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "splinedot")
+cbo_classifier_spl
+```
+
+```{r}
+set.seed(123)
+cbo_classifier_spl <- ksvm(Designation ~ ., data = cbo_train, kernel = "splinedot")
+cbo_predictions_spl <- predict(cbo_classifier_spl, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_spl)
+
+agreement_spl <- cbo_predictions_spl == cbo_test$Designation
+table(agreement_spl)
+prop.table(table(agreement_spl))
+```
+
+```{r}
+cbo_classifier_lap <- ksvm(Designation ~ ., data = cbo_train,
+                          kernel = "laplacedot")
+cbo_classifier_lap
+```
+
+```{r}
+set.seed(123)
+cbo_classifier_lap <- ksvm(Designation ~ ., data = cbo_train, kernel = "laplacedot")
+cbo_predictions_lap <- predict(cbo_classifier_lap, cbo_test)
+
+table(cbo_test$Designation, cbo_predictions_lap)
+
+agreement_lap <- cbo_predictions_lap == cbo_test$Designation
+table(agreement_lap)
+prop.table(table(agreement_lap))
+```
+
+

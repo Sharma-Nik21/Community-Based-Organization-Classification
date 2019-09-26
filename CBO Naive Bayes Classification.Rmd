@@ -1,0 +1,84 @@
+---
+title: "CBO Naive Bayes"
+output: html_notebook
+---
+
+```{r}
+cbo <- read.csv("cbo5k.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+head(cbo)
+```
+
+```{r}
+set.seed(123)
+cbo <- cbo[sample(1:nrow(cbo)), ]
+head(cbo)
+```
+
+```{r}
+cbo$Designation <- factor(cbo$Designation)
+```
+
+```{r}
+str(cbo$Designation)
+```
+
+```{r}
+table(cbo$Designation)
+```
+
+```{r}
+cbo$Tax_Exempt <- factor(cbo$Tax_Exempt)
+cbo$Registered <- factor(cbo$Registered)
+cbo$EIN <- factor(cbo$EIN)
+cbo$Public_Service <- factor(cbo$Public_Service)
+cbo$Location <- factor(cbo$Location)
+cbo$Financial <- factor(cbo$Financial)
+cbo$Waiver <- factor(cbo$Waiver)
+cbo$IRS990 <- factor(cbo$IRS990)
+```
+
+```{r}
+prop.table(table(cbo$Designation))
+```
+
+```{r}
+cbo_train <- cbo[1:3500, -9]
+cbo_test <- cbo[3501:5000, -9]
+```
+
+
+```{r}
+cbo_train_label <- cbo[1:3500,9]
+cbo_test_label <- cbo[3501:5000,9]
+```
+
+```{r}
+prop.table(table(cbo_train_label))
+prop.table(table(cbo_test_label))
+```
+
+#Run Model
+```{r}
+library(e1071)
+cbo_classifier <- naiveBayes(cbo_train,cbo_train_label)
+```
+
+```{r}
+cbo_pred <- predict(cbo_classifier,cbo_test)
+cbo_pred
+```
+
+```{r}
+table(cbo_pred)
+```
+
+```{r}
+library(gmodels)
+CrossTable(cbo_test_label,cbo_pred,prop.chisq = FALSE, prop.t = FALSE, 
+           prop.r = FALSE, dnn = c('predicted', 'actual'))
+```
+
+

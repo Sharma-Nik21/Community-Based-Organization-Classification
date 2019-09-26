@@ -1,0 +1,64 @@
+---
+title: "CBO Classification Tree"
+output: html_notebook
+---
+
+```{r}
+cbo <- read.csv("cbo5k.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+set.seed(123)
+cbo <- cbo[sample(1:nrow(cbo)), ]
+head(cbo)
+```
+
+```{r}
+cbo$Designation <- factor(cbo$Designation)
+cbo_train <- cbo[1:3500, ]
+cbo_test <- cbo[3501:5000, ]
+```
+
+```{r}
+cbo_train_label <- cbo[1:3500,9]
+cbo_test_label <- cbo[3501:5000,9]
+prop.table(table(cbo_train_label))
+prop.table(table(cbo_test_label))
+```
+
+```{r}
+library(C50)
+cbo_model <- C5.0(cbo_train[-9], cbo_train$Designation)
+```
+
+```{r}
+cbo_model
+summary(cbo_model)
+```
+
+```{r}
+cbo_pred <- predict(cbo_model, cbo_test)
+```
+
+```{r}
+library(gmodels)
+CrossTable(cbo_test$Designation, cbo_pred,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual default', 'predicted default'))
+```
+
+```{r}
+cbo_boost10 <- C5.0(cbo_train[-9], cbo_train$Designation,
+                       trials = 10)
+cbo_boost10
+summary(cbo_boost10)
+```
+
+```{r}
+cbo_boost_pred10 <- predict(cbo_boost10, cbo_test)
+CrossTable(cbo_test$Designation, cbo_boost_pred10,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,
+           dnn = c('actual default', 'predicted default'))
+
+```
+
